@@ -1,29 +1,9 @@
 # dex2jar
-
-<p align="center">
-  <a href="https://www.travis-ci.com/github/ThexXTURBOXx/dex2jar"><img src="https://www.travis-ci.com/ThexXTURBOXx/dex2jar.svg?branch=develop" alt="Travis CI build status"></a>
-</p>
-
-This is [Nico Mexis'](https://github.com/ThexXTURBOXx) fork of the dex2jar project which aims to fix most issues.
-
-## Fixed issues
-
-* Fixed many `StringIndexOutOfBoundsException`s relating to signatures
-* Fixed `TypeTransformer` related issues
-* Fixed many `NullPointerException`s and other crashes
-* Fixed grammar of error messages
-* Update libraries (especially ASM to `9.2`)
-* Library fat-jar can be used for other projects (Automatically produced
-  by [GitHub Actions](https://github.com/ThexXTURBOXx/dex2jar/actions))
-* Smali now outputs `.param` instead of the outdated `.parameter` syntax
-* Reformatted and cleaned up most of the code
+Dex2jar fork with fixes and features specifically targeted for generating stubs for [Aliucord](https://github.com/Aliucord/Aliucord).
 
 ## Downloads
 
-**To download the latest builds, head to the [Releases](https://github.com/ThexXTURBOXx/dex2jar/releases).**
-
-**Note: the builds in [Releases](https://github.com/ThexXTURBOXx/dex2jar/releases) are automatically built by GitHub
-Actions.**
+**To download the latest builds, head to the [Releases](https://github.com/Aliucord/dex2jar/releases).**
 
 Tools to work with android .dex and java .class files
 
@@ -42,22 +22,17 @@ Tools to work with android .dex and java .class files
 
 ## Usage
 
-1. In the root directory run: `./gradlew distZip`
-2. `cd dex-tools/build/distributions`
-3. Unzip the file `dex-tools-2.1-SNAPSHOT.zip`
-4. Run `d2j-dex2jar.sh` from the unzipped directory
+1. In the root directory run: `./gradlew shadowJar`
+2. `cd build/libs`
+3. Run `dex2jar.jar`
 
 ### Example usage:
 
 ```shell
-sh d2j-dex2jar.sh -f ~/path/to/apk_to_decompile.apk
+java -jar dex2jar.jar --no-code -f ~/path/to/apk_to_decompile.apk
 ```
 
 And the output file will be `apk_to_decompile-dex2jar.jar`.
-
-## Need help ?
-
-Send an email to nico.mexis@kabelmail.de or post on the [issue tracker](https://github.com/ThexXTURBOXx/dex2jar/issues).
 
 ## License
 
