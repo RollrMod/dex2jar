@@ -1,95 +1,42 @@
-allprojects {
-    apply plugin: 'maven-publish'
-    apply plugin: 'idea'
-    apply plugin: 'eclipse'
-    group = 'com.googlecode.d2j'
-    version = '2.1-SNAPSHOT'
+plugins {
+    id "application"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
-defaultTasks('clean', 'distZip')
-
-subprojects {
+allprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    apply plugin: 'idea'
+    group = 'com.googlecode.d2j'
+    version = '2.1-SNAPSHOT'
 
-    task packageSources(type: Jar) {
-        if (!getTasksByName('generateGrammarSource', false).empty) {
-            dependsOn(generateGrammarSource)
-        }
-        archiveClassifier.set('sources')
-        from sourceSets.main.allSource
-    }
-    artifacts.archives packageSources
+    sourceCompatibility = targetCompatibility = 1.8
+
     repositories {
         mavenCentral()
     }
 
-// == support provided scope
-    configurations {
-        provided
-    }
-    sourceSets {
-        main { compileClasspath += configurations.provided }
-        test {
-            compileClasspath += configurations.provided
-        }
-    }
-// == end
-
-    [compileJava, compileTestJava]*.options.collect { options -> options.encoding = 'UTF-8' }
-    compileJava.options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-    compileTestJava.options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-
     dependencies {
-        testImplementation group: 'junit', name: 'junit', version: '4.13.2'
         implementation fileTree(dir: 'libs', include: '*.jar')
     }
 
-    jar {
-        manifest {
-            attributes("Implementation-Title": project.name,
-                    "Implementation-Version": project.version,
-                    "Build-Time": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                    "Revision": "${getRevision()}",
-                    "Build-Number": System.env.BUILD_NUMBER ? System.env.BUILD_NUMBER : "-1",
-            )
-        }
-        from(project.parent.projectDir) {
-            include 'NOTICE.txt'
-            include 'LICENSE.txt'
-            into('META-INF')
-        }
+    [compileJava, compileTestJava]*.options.collect { options -> options.encoding = 'UTF-8' }
+}
+
+subprojects {
+    dependencies {
+        testImplementation group: 'junit', name: 'junit', version: '4.13.2'
     }
 }
 
-static def getRevision() {
-    if (System.env.BUILD_REVISION) {
-        return System.env.BUILD_REVISION
-    }
-    if (System.env.GIT_REVISION) {
-        return System.env.GIT_REVISION
-    }
-    if (System.env.MERCURIAL_REVISION) {
-        System.env.MERCURIAL_REVISION
-    }
+mainClassName = "com.googlecode.dex2jar.tools.Dex2jarCmd"
+archivesBaseName = "dex2jar"
 
-    def ver = null
-    try {
-        ver = 'git rev-parse --short HEAD'.execute().text.trim()
-    } catch (ignored) {
-        // ignore
-    }
-    if (!ver) {
-        try {
-            ver = 'hg id -i -b -t'.execute().text.split(' ')[0]
-        } catch (ignored) {
-            // ignore
-        }
-    }
-    if (!ver) {
-        ver = "HEAD"
-    }
-    return ver
+dependencies {
+    implementation project(':dex-tools')
+}
+
+shadowJar {
+    archiveClassifier.set(null)
+    archiveVersion.set("")
 }
