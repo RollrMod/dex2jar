@@ -6,6 +6,10 @@ plugins {
 allprojects {
     group = 'com.googlecode.d2j'
     version = '2.1-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
 }
 
 subprojects {
@@ -13,10 +17,6 @@ subprojects {
     apply plugin: 'maven-publish'
 
     sourceCompatibility = targetCompatibility = 1.8
-
-    repositories {
-        mavenCentral()
-    }
 
     dependencies {
         implementation fileTree(dir: 'libs', include: '*.jar')
