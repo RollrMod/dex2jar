@@ -234,7 +234,6 @@ public class UnSSATransformer implements Transformer {
         for (int i = 0; i < newLiveVs.size(); i++) {
             newFrame[i + frame.length] = newLiveVs.get(i);
         }
-
     }
 
     @Override
@@ -336,17 +335,21 @@ public class UnSSATransformer implements Transformer {
                 }
                 tos.clear();
             } else if (stmt.st == ST.LABEL) { //
+                // https://github.com/pxb1988/dex2jar/issues/477
+                // the exception handler is dead and stmt.frame is null
                 LabelStmt label = (LabelStmt) stmt;
-                if (label.phis != null) {
+                if (label.phis != null && stmt.frame != null) {
                     for (AssignStmt phiAssignStmt : label.phis) {
                         Local phiLocal = (Local) phiAssignStmt.getOp1();
                         RegAssign a = (RegAssign) phiLocal.tag;
                         LiveV[] frame = (LiveV[]) stmt.frame;
-                        for (LiveV v : frame) {
-                            if (v != null && v.used) {
-                                RegAssign b = (RegAssign) v.local.tag;
-                                a.excludes.add(b);
-                                b.excludes.add(a);
+                        if (frame != null) {
+                            for (LiveV v : frame) {
+                                if (v != null && v.used) {
+                                    RegAssign b = (RegAssign) v.local.tag;
+                                    a.excludes.add(b);
+                                    b.excludes.add(a);
+                                }
                             }
                         }
                     }
