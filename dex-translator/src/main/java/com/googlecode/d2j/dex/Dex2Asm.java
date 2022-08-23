@@ -679,8 +679,14 @@ public class Dex2Asm {
             signature = null;
         }
 
-        final int fieldCleanFlag = ~((DexConstants.ACC_DECLARED_SYNCHRONIZED | Opcodes.ACC_SYNTHETIC | Opcodes.ACC_FINAL));
-        FieldVisitor fv = cv.visitField(fieldNode.access & fieldCleanFlag, fieldNode.field.getName(),
+        int access = fieldNode.access & ~Opcodes.ACC_FINAL;
+
+        // Removing synthetic flag from enum's $VALUES crashes intellij analyzer
+        if (!Objects.equals(fieldNode.field.getName(), "$VALUES")) {
+            access &= ~Opcodes.ACC_SYNTHETIC;
+        }
+
+        FieldVisitor fv = cv.visitField(access, fieldNode.field.getName(),
                 fieldNode.field.getType(), signature, value);
 
         if (fv == null) {
