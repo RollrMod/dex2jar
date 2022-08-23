@@ -450,6 +450,23 @@ public class Dex2Asm {
         convertClass(dfn.dexVersion, classNode, cvf, classes);
     }
 
+	private static void visitInnerClasses(ClassVisitor cv, String originalName, Clz clz, boolean isInterface) {
+		if (clz != null) {
+			if (clz.enclosingClass != null) {
+				cv.visitInnerClass(toInternalName(clz.name), toInternalName(clz.enclosingClass.name), clz.innerName, clz.access);
+			}
+		} else if (originalName.contains("$")) {
+			// We don't have the original dex declaration for the inner, take a guess TODO figure out if theres any other way
+			String name = toInternalName(originalName);
+
+			int index = name.lastIndexOf('$');
+			String outerName = name.substring(0, index);
+			String innerName = name.substring(index + 1);
+
+			cv.visitInnerClass(name, outerName, innerName, Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT | (isInterface ? Opcodes.ACC_INTERFACE : 0));
+		}
+	}
+
     public void convertClass(int dexVersion, DexClassNode classNode, ClassVisitorFactory cvf,
                              Map<String, Clz> classes) {
         ClassVisitor cv = cvf.create(toInternalName(classNode.className));
@@ -553,6 +570,17 @@ public class Dex2Asm {
                         clzCtx.hexDecodeMethodNamePrefix);
             }
         }
+
+        if (classNode.superClass != null && !classNode.superClass.equals("Ljava/lang/Object;")) {
+            visitInnerClasses(cv, classNode.superClass, classes.get(classNode.superClass), false);
+        }
+
+        if (classNode.interfaceNames != null) {
+			for (String interfaceName : classNode.interfaceNames) {
+				visitInnerClasses(cv, interfaceName, classes.get(interfaceName), true);
+			}
+        }
+
         cv.visitEnd();
     }
 
