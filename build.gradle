@@ -32,6 +32,15 @@ subprojects {
                 from components.java
             }
         }
+        repositories {
+            maven {
+                url = uri('https://maven.aliucord.com/snapshots')
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
+            }
+        }
     }
 }
 

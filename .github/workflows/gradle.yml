@@ -22,9 +22,12 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
       - name: Build dex-tools with Gradle
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew check distZip
+          ./gradlew check distZip publish
 
       - uses: ncipollo/release-action@v1
         with:
