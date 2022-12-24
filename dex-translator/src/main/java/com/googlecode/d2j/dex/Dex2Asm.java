@@ -453,7 +453,7 @@ public class Dex2Asm {
 	private static void visitInnerClasses(ClassVisitor cv, String originalName, Clz clz, boolean isInterface) {
 		if (clz != null) {
 			if (clz.enclosingClass != null) {
-				cv.visitInnerClass(toInternalName(clz.name), toInternalName(clz.enclosingClass.name), clz.innerName, clz.access);
+				cv.visitInnerClass(toInternalName(clz.name), toInternalName(clz.enclosingClass.name), clz.innerName, clearInnerAccess(clz.access));
 			}
 		} else if (originalName.contains("$")) {
 			// We don't have the original dex declaration for the inner, take a guess TODO figure out if theres any other way
