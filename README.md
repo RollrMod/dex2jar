@@ -1,6 +1,24 @@
 # dex2jar
 Dex2jar fork with fixes and features specifically targeted for generating stubs for [Aliucord](https://github.com/Aliucord/Aliucord).
 
+<p align="center">
+  <a href="https://www.travis-ci.com/github/ThexXTURBOXx/dex2jar"><img src="https://www.travis-ci.com/ThexXTURBOXx/dex2jar.svg?branch=develop" alt="Travis CI build status"></a>
+</p>
+
+This is [Nico Mexis'](https://github.com/ThexXTURBOXx) fork of the dex2jar project which aims to fix most issues.
+
+## Fixed issues
+
+* Fixed many `StringIndexOutOfBoundsException`s relating to signatures
+* Fixed `TypeTransformer` related issues
+* Fixed many `NullPointerException`s and other crashes
+* Fixed grammar of error messages
+* Update libraries (especially ASM)
+* Library fat-jar can be used for other projects (Automatically produced
+  by [GitHub Actions](https://github.com/ThexXTURBOXx/dex2jar/actions))
+* Smali now outputs `.param` instead of the outdated `.parameter` syntax
+* Reformatted and cleaned up most of the code
+
 ## Downloads
 
 **To download the latest builds, head to the [Releases](https://github.com/Aliucord/dex2jar/releases).**
@@ -33,6 +51,14 @@ java -jar dex2jar.jar --no-code -f ~/path/to/apk_to_decompile.apk
 ```
 
 And the output file will be `apk_to_decompile-dex2jar.jar`.
+
+### Example Maven project:
+
+See for example the infamous [Bytecode Viewer](https://github.com/Konloch/bytecode-viewer).
+
+## Need help ?
+
+Send an email to nico.mexis@kabelmail.de or post on the [issue tracker](https://github.com/ThexXTURBOXx/dex2jar/issues).
 
 ## License
 

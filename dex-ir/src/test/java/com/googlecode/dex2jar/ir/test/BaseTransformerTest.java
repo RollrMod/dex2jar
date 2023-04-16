@@ -12,8 +12,8 @@ import com.googlecode.dex2jar.ir.ts.Transformer;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 // Ignore the unused inspection; it is indeed used
 public abstract class BaseTransformerTest<T extends Transformer> {
@@ -86,7 +86,7 @@ public abstract class BaseTransformerTest<T extends Transformer> {
         method.isStatic = isStatic;
     }
 
-    @After
+    @AfterEach
     public void reset() {
         method = null;
         stmts = null;
@@ -94,7 +94,7 @@ public abstract class BaseTransformerTest<T extends Transformer> {
         labelIndex = 0;
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         method = new IrMethod();
         method.owner = "La/Clz;";
@@ -105,5 +105,4 @@ public abstract class BaseTransformerTest<T extends Transformer> {
         stmts = method.stmts;
         locals = method.locals;
     }
-
 }

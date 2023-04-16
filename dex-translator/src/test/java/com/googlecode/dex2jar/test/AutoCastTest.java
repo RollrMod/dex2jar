@@ -7,8 +7,7 @@ import com.googlecode.d2j.visitors.DexClassVisitor;
 import com.googlecode.d2j.visitors.DexCodeVisitor;
 import com.googlecode.d2j.visitors.DexFieldVisitor;
 import com.googlecode.d2j.visitors.DexMethodVisitor;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.googlecode.d2j.reader.Op.ADD_INT;
 import static com.googlecode.d2j.reader.Op.CONST;
@@ -16,6 +15,7 @@ import static com.googlecode.d2j.reader.Op.INVOKE_SUPER;
 import static com.googlecode.d2j.reader.Op.RETURN_VOID;
 import static com.googlecode.d2j.reader.Op.SGET_BOOLEAN;
 import static com.googlecode.d2j.reader.Op.SPUT_SHORT;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AutoCastTest implements DexConstants {
 
@@ -62,11 +62,11 @@ public class AutoCastTest implements DexConstants {
         byte[] data = TestUtils.testDexASMifier(getClass(), "strict", "a");
         Class<?> clz = TestUtils.defineClass("a", data);
         Object c = clz.getDeclaredConstructor().newInstance();
-        Assert.assertNotNull(c);
+        assertNotNull(c);
         java.lang.reflect.Field f = clz.getDeclaredField("theField");
         f.setAccessible(true);
         Short r = (Short) f.get(null);
-        Assert.assertEquals(-1, r.intValue());
+        assertEquals(-1, r.intValue());
 
         // it's already ok to run on JVM and able to convert to dex,
         // // check for I2S instruction
@@ -83,7 +83,7 @@ public class AutoCastTest implements DexConstants {
         // }
         // }
         // }
-        // Assert.assertTrue("we need an I2S instruction", find);
+        // assertTrue("we need an I2S instruction", find);
     }
 
 }

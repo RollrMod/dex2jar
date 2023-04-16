@@ -10,85 +10,69 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runner.RunWith;
-import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.ParentRunner;
-import org.junit.runners.model.InitializationError;
-import org.junit.runners.model.Statement;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:pxb1988@gmail.com">Panxiaobo</a>
  */
-@RunWith(ResTest.TestRunner.class)
 public class ResTest {
+    private static File dir;
 
     public static class FileSet {
         String name;
         List<Path> files = new ArrayList<>(3);
     }
 
-    public static class TestRunner extends ParentRunner<FileSet> {
-        public TestRunner(Class<?> testClass) throws InitializationError {
-            super(testClass);
-            init(testClass);
-        }
+    @BeforeAll
+    static void setup() {
+        Class<?> testClass = ResTest.class;
+        URL url = testClass.getResource("/" + testClass.getName().replace('.', '/') + ".class");
+        assertNotNull(url);
+        String file = url.getFile();
+        assertNotNull(file);
+        String dirx = file.substring(0, file.length() - testClass.getName().length() - ".class".length());
+        dir = new File(dirx, "res");
+    }
 
-        List<FileSet> fileSetList;
-        File dir;
-
-        void init(Class<?> testClass) {
-            URL url = testClass.getResource("/" + testClass.getName().replace('.', '/') + ".class");
-            Assert.assertNotNull(url);
-            String file = url.getFile();
-            Assert.assertNotNull(file);
-            String dirx = file.substring(0, file.length() - testClass.getName().length() - ".class".length());
-
-            dir = new File(dirx, "res");
-            Map<String, FileSet> m = new HashMap<>();
-            for (Path f : TestUtils.listPath(dir, ".class")) {
-                String name = getBaseName(f.getFileName().toString());
-
-                int i = name.indexOf('$');
-                String z = i > 0 ? name.substring(0, i) : name;
-                FileSet fs = m.get(z);
-                if (fs == null) {
-                    fs = new FileSet();
-                    fs.name = z;
-                    m.put(z, fs);
-                }
-                fs.files.add(f);
+    @ParameterizedTest
+    @MethodSource("findFileSets")
+    void test(FileSet fileSet) {
+        try {
+            File dex = TestUtils.dexP(fileSet.files, new File(dir, fileSet.name + ".dex"));
+            DexFileNode fileNode = new DexFileNode();
+            DexFileReader r = new DexFileReader(dex);
+            r.accept(fileNode);
+            for (DexClassNode classNode : fileNode.clzs) {
+                TestUtils.translateAndCheck(fileNode, classNode);
             }
-            this.fileSetList = new ArrayList<>(m.values());
+        } catch (Exception ex) {
+            fail(ex);
         }
+    }
 
-        @Override
-        protected List<FileSet> getChildren() {
-            return fileSetList;
-        }
+    public static Stream<Arguments> findFileSets() {
+        Map<String, FileSet> m = new HashMap<>();
+        for (Path f : TestUtils.listPath(dir, ".class")) {
+            String name = getBaseName(f.getFileName().toString());
 
-        @Override
-        protected Description describeChild(FileSet child) {
-            return Description.createTestDescription(getTestClass().getJavaClass(), child.name);
+            int i = name.indexOf('$');
+            String z = i > 0 ? name.substring(0, i) : name;
+            FileSet fs = m.get(z);
+            if (fs == null) {
+                fs = new FileSet();
+                fs.name = z;
+                m.put(z, fs);
+            }
+            fs.files.add(f);
         }
-
-        @Override
-        protected void runChild(final FileSet child, RunNotifier notifier) {
-            runLeaf(new Statement() {
-                @Override
-                public void evaluate() throws Throwable {
-                    File dex = TestUtils.dexP(child.files, new File(dir, child.name + ".dex"));
-                    File distFile = new File(dex.getParentFile(), getBaseName(dex.getName()) + "_d2j.jar");
-                    DexFileNode fileNode = new DexFileNode();
-                    DexFileReader r = new DexFileReader(dex);
-                    r.accept(fileNode);
-                    for (DexClassNode classNode : fileNode.clzs) {
-                        TestUtils.translateAndCheck(fileNode, classNode);
-                    }
-                }
-            }, describeChild(child), notifier);
-        }
+        return m.values().stream()
+                .map(Arguments::of);
     }
 
     public static String getBaseName(String fn) {
