@@ -1,5 +1,5 @@
 # dex2jar
-Dex2jar fork with fixes and features specifically targeted for generating stubs for [Aliucord](https://github.com/Aliucord/Aliucord).
+Dex2jar fork with fixes and features specifically targeted for generating stubs for [Rollr](https://github.com/RollrMod/Rollr).
 
 <p align="center">
   <a href="https://www.travis-ci.com/github/ThexXTURBOXx/dex2jar"><img src="https://www.travis-ci.com/ThexXTURBOXx/dex2jar.svg?branch=develop" alt="Travis CI build status"></a>
@@ -21,7 +21,7 @@ This is [Nico Mexis'](https://github.com/ThexXTURBOXx) fork of the dex2jar proje
 
 ## Downloads
 
-**To download the latest builds, head to the [Releases](https://github.com/Aliucord/dex2jar/releases).**
+**To download the latest builds, head to the [Releases](https://github.com/RollrMod/dex2jar/releases).**
 
 Tools to work with android .dex and java .class files
 
