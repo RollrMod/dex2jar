@@ -54,7 +54,7 @@ subprojects {
         }
         repositories {
             maven {
-                url = uri('https://maven.rollr.com/snapshots')
+                url = uri('https://maven.enovale.com/snapshots')
                 credentials {
                     username = System.getenv("MAVEN_USERNAME")
                     password = System.getenv("MAVEN_PASSWORD")
